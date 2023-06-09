@@ -19,6 +19,8 @@ async function getMostRecentRepoTag() {
     .map(ref => ref.ref.replace(/^refs\/tags\//g, '').replace(prx, ''))
     .map(tag => semver.parse(tag, { loose: true }))
     .filter(version => version !== null)
+    .filter(version => (core.getInput('only_release') == 'true' && semver.prerelease(version) === null) 
+            || (core.getInput('only_release') !== 'true' && semver.prerelease(version) !== null) )
     .sort(semver.rcompare)
 
   return versions[0] || semver.parse('0.0.0')
